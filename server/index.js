@@ -5,9 +5,14 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express(); // create express app
-
-app.use(cors()); // for cross-origin
 app.use(express.json()); // for parsing application/json
+app.use(cors()); // for cross-origin
+app.use(
+  cors({
+    origin: `${process.env.NODE_CLIENT_URL}`,
+    credentials: true, // Allow cookies or auth headers
+  })
+); // for cross-origin
 
 // ✅ Only listen if not running in Vercel (i.e. not a serverless environment)
 if (require.main === module) {

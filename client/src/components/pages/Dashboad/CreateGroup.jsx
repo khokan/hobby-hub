@@ -1,55 +1,44 @@
-import React from "react";
-import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
-import { useLoaderData } from "react-router";
+import { auth } from "../../../firebase/firebase.config";
+import { Helmet } from "react-helmet-async";
 
-const UpdateGroup = () => {
-  const userData = useLoaderData();
-  const {
-    _id,
-    groupName,
-    hobbyCategory,
-    imageUrl,
-    meetingLocation,
-    maxMembers,
-    description,
-    userName,
-    userEmail,
-    startDate,
-  } = userData;
-
-  const handleUpdateGroup = (e) => {
+const CreateGroup = () => {
+  const user = auth.currentUser;
+  const handleCreateGroup = (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-    const newCoffee = Object.fromEntries(formData.entries());
-    fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups/${_id}`, {
-      method: "PUT",
+    const newGroup = Object.fromEntries(formData.entries());
+
+    fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups`, {
+      method: "POST",
       headers: {
         "content-type": "Application/json",
       },
-      body: JSON.stringify(newCoffee),
+      body: JSON.stringify(newGroup),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.modifiedCount > 0) toast.success("Group updation successful");
+        if (data.insertedId) toast.success("Group creation successful");
+        form.reset();
       });
   };
   return (
     <>
       <Helmet>
-        <title>Update | HobbyHub</title>
+        <title>Create | HobbyHub</title>
       </Helmet>
-      <div className="p-6 md:p-12 rounded-box shadow-lg">
-        <div className="p-6 md:p-6 text-center space-y-4">
-          <h1 className="text-3xl text-primary font-bold">Update Group</h1>
+      <div className="p-6 md:p-12  rounded-box shadow-lg">
+        <div className="p-6 md:p-6  text-center space-y-4">
+          <h1 className="text-3xl text-primary font-bold">Add New Group</h1>
           <p className="text-accent text-base max-w-3xl mx-auto">
-            Update your group information below. You can change group details
-            and save the new info.
+            Create a new group by filling out the form below. Make sure to
+            provide accurate information to help others find and join your
+            group.
           </p>
         </div>
 
-        <form onSubmit={handleUpdateGroup}>
+        <form onSubmit={handleCreateGroup}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
             <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 shadow">
               <label htmlFor="groupName" className="label">
@@ -60,7 +49,7 @@ const UpdateGroup = () => {
                 type="text"
                 name="groupName"
                 className="input w-full"
-                defaultValue={groupName}
+                placeholder="Enter group name"
                 required
               />
             </fieldset>
@@ -73,10 +62,10 @@ const UpdateGroup = () => {
                 id="hobbyCategory"
                 name="hobbyCategory"
                 className="select w-full"
-                defaultValue={hobbyCategory}
+                defaultValue="Select category"
                 required
               >
-                <option disabled value="">
+                <option disabled selected>
                   Select category
                 </option>
                 <option>Drawing & Painting</option>
@@ -100,7 +89,7 @@ const UpdateGroup = () => {
                 type="text"
                 name="meetingLocation"
                 className="input w-full"
-                defaultValue={meetingLocation}
+                placeholder="Enter meeting location"
                 required
               />
             </fieldset>
@@ -114,7 +103,7 @@ const UpdateGroup = () => {
                 type="number"
                 name="maxMembers"
                 className="input w-full"
-                defaultValue={maxMembers}
+                placeholder="Enter max number of members"
                 min="1"
                 required
               />
@@ -128,7 +117,7 @@ const UpdateGroup = () => {
                 id="description"
                 name="description"
                 className="textarea w-full"
-                defaultValue={description}
+                placeholder="Write a short description about the group"
                 rows="3"
                 required
               ></textarea>
@@ -143,7 +132,6 @@ const UpdateGroup = () => {
                 type="date"
                 name="startDate"
                 className="input w-full"
-                defaultValue={startDate}
                 required
               />
             </fieldset>
@@ -157,13 +145,13 @@ const UpdateGroup = () => {
                 type="url"
                 name="imageUrl"
                 className="input w-full"
-                defaultValue={imageUrl}
+                placeholder="Enter image URL"
                 required
               />
             </fieldset>
           </div>
 
-          <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 my-6 shadow">
+          <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 shadow my-6">
             <label htmlFor="userName" className="label">
               User Name (readonly)
             </label>
@@ -172,9 +160,10 @@ const UpdateGroup = () => {
               type="text"
               name="userName"
               className="input w-full"
-              value={userName}
+              value={user?.displayName}
               readOnly
             />
+
             <label htmlFor="userEmail" className="label mt-4">
               User Email (readonly)
             </label>
@@ -183,7 +172,7 @@ const UpdateGroup = () => {
               type="email"
               name="userEmail"
               className="input w-full"
-              value={userEmail}
+              value={user?.email}
               readOnly
             />
           </fieldset>
@@ -191,7 +180,7 @@ const UpdateGroup = () => {
           <input
             type="submit"
             className="btn btn-primary w-full hover:scale-105 transition-transform duration-200"
-            value="Update"
+            value="Create"
           />
         </form>
       </div>
@@ -199,4 +188,4 @@ const UpdateGroup = () => {
   );
 };
 
-export default UpdateGroup;
+export default CreateGroup;

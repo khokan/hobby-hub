@@ -5,11 +5,13 @@ import ErrorPage from "../components/pages/ErrorPage";
 import HobbyGroups from "../components/pages/Group/HobbyGroups";
 import HobbyGroupDetails from "../components/pages/Group/HobbyGroupDetails";
 import PrivateRouter from "./PrivateRouter";
-import CreateGroup from "../components/pages/Group/CreateGroup";
-import MyGroups from "../components/pages/Group/MyGroups";
 import UpdateGroup from "../components/pages/Group/UpdateGroup";
 import Login from "../components/pages/Login";
 import Registration from "../components/pages/Registration";
+import Overview from "../components/pages/Dashboad/Overview";
+import CreateGroup from "../components/pages/Dashboad/CreateGroup";
+import MyGroups from "../components/pages/Dashboad/MyGroups";
+import DashBoardLayout from "../layouts/DashBoardLayout";
 
 const router = createBrowserRouter([
   {
@@ -20,9 +22,9 @@ const router = createBrowserRouter([
         index: true,
         Component: Home,
         loader: () =>
-          fetch("https://b11a10-server-side-khokan77.vercel.app/groups"),
+          fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups`),
         hydrateFallbackElement: (
-          <div className="text-center">
+          <div className="text-center pt-20">
             <span className="loading loading-bars loading-xl"></span>{" "}
           </div>
         ),
@@ -35,14 +37,7 @@ const router = createBrowserRouter([
         path: "registration",
         Component: Registration,
       },
-      {
-        path: "createGroup",
-        element: (
-          <PrivateRouter>
-            <CreateGroup />
-          </PrivateRouter>
-        ),
-      },
+    
       {
         path: "updateGroup/:id",
         element: (
@@ -52,7 +47,7 @@ const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `https://b11a10-server-side-khokan77.vercel.app/groups/${params.id}`
+            `${import.meta.env.VITE_NODE_SERVER_URL}/groups/${params.id}`
           ),
         hydrateFallbackElement: (
           <div className="text-center">
@@ -60,26 +55,12 @@ const router = createBrowserRouter([
           </div>
         ),
       },
-      {
-        path: "myGroups",
-        element: (
-          <PrivateRouter>
-            <MyGroups />
-          </PrivateRouter>
-        ),
-        loader: () =>
-          fetch("https://b11a10-server-side-khokan77.vercel.app/groups"),
-        hydrateFallbackElement: (
-          <div className="text-center">
-            <span className="loading loading-bars loading-xl"></span>{" "}
-          </div>
-        ),
-      },
+    
       {
         path: "groups",
         Component: HobbyGroups,
         loader: () =>
-          fetch("https://b11a10-server-side-khokan77.vercel.app/groups"),
+          fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups`),
         hydrateFallbackElement: (
           <div className="text-center">
             <span className="loading loading-bars loading-xl"></span>{" "}
@@ -95,7 +76,7 @@ const router = createBrowserRouter([
         ),
         loader: ({ params }) =>
           fetch(
-            `https://b11a10-server-side-khokan77.vercel.app/groups/${params.id}`
+            `${import.meta.env.VITE_NODE_SERVER_URL}/groups/${params.id}`
           ),
         hydrateFallbackElement: (
           <div className="text-center">
@@ -103,12 +84,53 @@ const router = createBrowserRouter([
           </div>
         ),
       },
+       {
+    path: "/dashboard",
+    element: (
+      <PrivateRouter>
+        <DashBoardLayout />
+      </PrivateRouter>
+    ),
+    children: [
+      {
+        index: true, // equivalent to /dashboard
+        path: "overView",
+        Component: Overview,
+        loader: () =>
+            fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups`),
+          hydrateFallbackElement: (
+            <div className="text-center">
+              <span className="loading loading-bars loading-xl"></span>{" "}
+            </div>
+          ),
+      },
+        {
+          path: "createGroup",
+          element: (
+              <CreateGroup />
+          ),
+        },
+      {
+          path: "myGroups",
+          element: (
+              <MyGroups />
+          ),
+          loader: () =>
+            fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/groups`),
+          hydrateFallbackElement: (
+            <div className="text-center">
+              <span className="loading loading-bars loading-xl"></span>{" "}
+            </div>
+          ),
+        },
     ],
-  },
+}]},
+
   {
     path: "*",
     element: <ErrorPage />,
   },
+
 ]);
 
 export default router;
